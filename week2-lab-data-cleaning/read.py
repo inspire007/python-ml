@@ -2,6 +2,8 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
+from sklearn.preprocessing import MinMaxScaler
+from scipy import stats
 
 housing = pd.read_csv('Ames_Housing_Data1.tsv', sep='\t')
 
@@ -32,5 +34,35 @@ print("Skewness:", logged_price.skew())
 plt.show()
 '''
 
-duplicates = housing[housing.duplicated(['PID'])]
-print(duplicates)
+#duplicates = housing[housing.duplicated(['PID'])]
+#print(duplicates)
+
+'''
+missing = housing.isnull().sum().sort_values(ascending=False).head(20)
+missing.plot(kind='bar')
+plt.show()
+'''
+
+#sns.boxplot(x=housing['SalePrice'])
+'''
+housing.plot.scatter(x='Gr Liv Area', y='SalePrice')
+plt.show()
+'''
+
+'''
+outliner = housing.sort_values('Gr Liv Area', ascending=False)[:2]
+print(outliner)
+
+outliner_removed = housing.drop(housing.index[[1499, 2181]])
+outliner_removed.plot.scatter(x='Gr Liv Area', y='SalePrice')
+plt.show()
+'''
+
+housing['Lot_Area_Z'] = stats.zscore(housing['Lot Area'])
+print(housing['Lot_Area_Z'])
+
+lot_area_outliner_indexes = housing['Lot_Area_Z'][abs(housing['Lot_Area_Z']) > 3].index.to_numpy()
+print(lot_area_outliner_indexes)
+
+lot_area_outliner_removed = housing.drop(housing.index[lot_area_outliner_indexes])
+print(lot_area_outliner_removed)
